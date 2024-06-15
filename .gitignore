@@ -1,4 +1,4 @@
-bin
-Migrations
+/bin
+/Migrations
 appsettings.json
 appsettings.Development.json

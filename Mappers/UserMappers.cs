@@ -14,4 +14,13 @@ public static class UserMappers
             BirthDay = userModel.BirthDay
         };
     }
+
+    public static User ToUserFromCreateDTO(this CreateUserRequestDto userDto)
+    {
+        return new User
+        {
+            Name = userDto.Name,
+            BirthDay = userDto.BirthDay
+        };
+    }
 }

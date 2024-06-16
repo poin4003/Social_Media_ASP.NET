@@ -1,0 +1,2 @@
+
+namespace api.Dtos.Posts;

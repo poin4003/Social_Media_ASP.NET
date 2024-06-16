@@ -1,5 +1,6 @@
 using api.Data;
 using api.Dtos.User;
+using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -14,15 +15,17 @@ namespace api.Controllers;
 public class UserController : ControllerBase
 {
    private readonly ApplicationDBContext _context;
-   public UserController(ApplicationDBContext context)
+   private readonly IUserRepository _userRepo;
+   public UserController(ApplicationDBContext context, IUserRepository userRepo)
    {
+        _userRepo = userRepo;
         _context = context;
    } 
 
    [HttpGet]
    public async Task<IActionResult> GetAll() 
    {
-      var users = await _context.Users.ToListAsync();
+      var users = await _userRepo.GetAllAsync();
 
       var userDto = users.Select(s => s.ToUserDto());
 

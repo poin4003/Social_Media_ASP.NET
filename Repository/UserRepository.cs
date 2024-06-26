@@ -42,7 +42,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetByIdAsync(int id)
     {
-        return await _context.Users.FindAsync(id);
+        return await _context.Users.Include(p => p.Posts).FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<User?> UpdateAsync(int id, UpdateUserRequestDto userDto)
@@ -60,5 +60,10 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
 
         return existingUser;
+    }
+
+    public Task<bool> UserExists(int id)
+    {
+        return _context.Users.AnyAsync(p => p.Id == id);
     }
 }

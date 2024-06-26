@@ -11,7 +11,8 @@ public static class UserMappers
         {
             Id = userModel.Id,
             Name = userModel.Name,
-            BirthDay = userModel.BirthDay
+            BirthDay = userModel.BirthDay,
+            Posts = userModel.Posts.Select(p => p.ToPostDto()).ToList(),
         };
     }
 

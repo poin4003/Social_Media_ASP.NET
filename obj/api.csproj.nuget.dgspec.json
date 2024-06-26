@@ -1,25 +1,28 @@
 {
   "format": 1,
   "restore": {
-    "/home/pchuy/workspace/dotnet_project/ASP_NET/api/api.csproj": {}
+    "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj": {}
   },
   "projects": {
-    "/home/pchuy/workspace/dotnet_project/ASP_NET/api/api.csproj": {
+    "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/pchuy/workspace/dotnet_project/ASP_NET/api/api.csproj",
+        "projectUniqueName": "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj",
         "projectName": "api",
-        "projectPath": "/home/pchuy/workspace/dotnet_project/ASP_NET/api/api.csproj",
-        "packagesPath": "/home/pchuy/.nuget/packages/",
-        "outputPath": "/home/pchuy/workspace/dotnet_project/ASP_NET/api/obj/",
+        "projectPath": "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj",
+        "packagesPath": "C:\\Users\\pchuy\\.nuget\\packages\\",
+        "outputPath": "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/pchuy/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\pchuy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -32,12 +35,21 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[8.0.6, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -65,6 +77,10 @@
             "Microsoft.Extensions.Configuration.Json": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -94,7 +110,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -22,6 +22,20 @@ public class PostRepository : IPostRepository
         return postModel;
     }
 
+    public async Task<Post?> DeleteAsync(int id)
+    {
+        var postModel = await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+
+        if (postModel == null)
+        {
+            return null;
+        }
+
+        _context.Posts.Remove(postModel);
+        await _context.SaveChangesAsync();
+        return postModel;
+    }
+
     public async Task<List<Post>> GetAllAsync() 
     {
         return await _context.Posts.ToListAsync();
@@ -32,4 +46,23 @@ public class PostRepository : IPostRepository
         var post = await _context.Posts.FindAsync(id);
         return post;
     }
+
+    public async Task<Post?> UpdateAsync(int id, Post postModel)
+    {
+        var exitstingPost = await _context.Posts.FindAsync(id);
+        
+        if (exitstingPost == null) 
+        {
+            return null;
+        }
+
+        exitstingPost.Title = postModel.Title;
+        exitstingPost.Content = postModel.Content;
+        
+        await _context.SaveChangesAsync();
+        
+        return exitstingPost;
+    }
+
+    
 }

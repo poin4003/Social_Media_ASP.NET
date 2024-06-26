@@ -18,6 +18,8 @@ public class UserController : ControllerBase
    [HttpGet]
    public async Task<IActionResult> GetAll() 
    {
+      if (!ModelState.IsValid)
+         return BadRequest(ModelState);
       var users = await _userRepo.GetAllAsync();
 
       var userDto = users.Select(s => s.ToUserDto());
@@ -25,9 +27,11 @@ public class UserController : ControllerBase
       return Ok(users);
    }
 
-   [HttpGet("{id}")]
+   [HttpGet("{id:int}")]
    public async Task<IActionResult> GetById([FromRoute] int id)
    {
+      if (!ModelState.IsValid)
+         return BadRequest(ModelState);
       var user = await _userRepo.GetByIdAsync(id);
 
       if (user == null)
@@ -41,15 +45,21 @@ public class UserController : ControllerBase
    [HttpPost]
    public async Task<IActionResult> Create([FromBody] CreateUserRequestDto userDto)
    {
+      if (!ModelState.IsValid)
+         return BadRequest(ModelState);
+
       var userModel = userDto.ToUserFromCreateDTO();
       await _userRepo.CreateAsync(userModel);
       return CreatedAtAction(nameof(GetById), new { id = userModel.Id }, userModel.ToUserDto());
    }
 
    [HttpPut]
-   [Route("{id}")]
+   [Route("{id:int}")]
    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserRequestDto userDto)
    {
+      if (!ModelState.IsValid)
+         return BadRequest(ModelState);
+
       var userModel = await _userRepo.UpdateAsync(id, userDto);
 
       if (userModel == null) 
@@ -61,9 +71,12 @@ public class UserController : ControllerBase
    }
 
    [HttpDelete]
-   [Route("{id}")]
+   [Route("{id:int}")]
    public async Task<IActionResult> Delete([FromRoute] int id)
    {
+      if (!ModelState.IsValid)
+         return BadRequest(ModelState);
+         
       var userModel = await _userRepo.DeleteAsync(id);
 
       if (userModel == null)

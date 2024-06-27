@@ -1,4 +1,5 @@
 using api.Dtos.User;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,12 @@ public class UserController : ControllerBase
    } 
 
    [HttpGet]
-   public async Task<IActionResult> GetAll() 
+   public async Task<IActionResult> GetAll([FromQuery] QueryObject query) 
    {
       if (!ModelState.IsValid)
          return BadRequest(ModelState);
-      var users = await _userRepo.GetAllAsync();
+
+      var users = await _userRepo.GetAllAsync(query);
 
       var userDto = users.Select(s => s.ToUserDto());
 

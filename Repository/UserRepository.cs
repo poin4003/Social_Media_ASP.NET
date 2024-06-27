@@ -1,5 +1,6 @@
 using api.Data;
 using api.Dtos.User;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -35,9 +36,22 @@ public class UserRepository : IUserRepository
         return userModel;
     }
 
-    public async Task<List<User>> GetAllAsync()
+    public async Task<List<User>> GetAllAsync(QueryObject query)
     {
-        return await _context.Users.ToListAsync();
+        var users = _context.Users.Include(p => p.Posts).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query.Name))
+        {
+            users = users.Where(p => p.Name.Contains(query.Name));
+        }
+
+        if (query.BirthDay.HasValue)
+        {
+            var birthday = query.BirthDay.Value.Date;
+            users = users.Where(p => p.BirthDay.Date == birthday);
+        }
+
+        return await users.ToListAsync();
     }
 
     public async Task<User?> GetByIdAsync(int id)

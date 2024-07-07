@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj": {}
+    "C:\\workspace\\C#\\api\\SocialMediaApi\\Social_Media_ASP.NET\\api.csproj": {}
   },
   "projects": {
-    "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj": {
+    "C:\\workspace\\C#\\api\\SocialMediaApi\\Social_Media_ASP.NET\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj",
+        "projectUniqueName": "C:\\workspace\\C#\\api\\SocialMediaApi\\Social_Media_ASP.NET\\api.csproj",
         "projectName": "api",
-        "projectPath": "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\api.csproj",
+        "projectPath": "C:\\workspace\\C#\\api\\SocialMediaApi\\Social_Media_ASP.NET\\api.csproj",
         "packagesPath": "C:\\Users\\pchuy\\.nuget\\packages\\",
-        "outputPath": "C:\\workspace\\C#\\api\\Social_Media_ASP.NET\\obj\\",
+        "outputPath": "C:\\workspace\\C#\\api\\SocialMediaApi\\Social_Media_ASP.NET\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\pchuy\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -46,6 +46,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.6, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.6, )"
+            },
             "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
               "target": "Package",
               "version": "[8.0.6, )"

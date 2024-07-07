@@ -1,0 +1,24 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace api.Models;
+
+public class Comment 
+{
+    [Key]
+    public string CommentId { get; set; } = Guid.NewGuid().ToString();
+    [Required]
+    public string PostId { get; set; } = string.Empty;
+    [Required]
+    public string UserId { get; set; } = string.Empty;
+    [Required]
+    public string Content { get; set; } = string.Empty;
+    [Required]
+    public DateTime CreateAt { get; set; } = DateTime.Now;
+    [Required]
+    public int LikesCount { get; set; } = 0;
+    [ForeignKey(nameof(PostId))]
+    public virtual Post? Post{ get; set; }
+    [ForeignKey(nameof(UserId))]
+    public virtual ApplicationUser? User { get; set;}
+}

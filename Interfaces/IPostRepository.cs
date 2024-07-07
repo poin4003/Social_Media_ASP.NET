@@ -1,13 +1,14 @@
-
+using api.Helpers;
 using api.Models;
 
 namespace api.Interfaces;
 
 public interface IPostRepository
 {
-    Task<List<Post>> GetAllAsync();
-    Task<Post?> GetByIdAsync(int id);
+    Task<List<Post>> GetAllAsync(PostQueryObject query);
+    Task<Post?> GetByIdAsync(string id);
     Task<Post> CreateAsync(Post postModel);
-    Task<Post?> UpdateAsync(int id, Post postModel);
-    Task<Post?> DeleteAsync(int id);
+    Task<Post?> UpdateAsync(string id, Post postModel);
+    Task<Post?> DeleteAsync(string id);
+    Task<bool> PostExists(string id);
 }

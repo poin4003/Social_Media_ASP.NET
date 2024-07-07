@@ -12,26 +12,38 @@ public static class PostMapper
             Id = postmodel.Id,
             Title = postmodel.Title,
             Content = postmodel.Content,
-            UserId = postmodel.UserId
+            MediaUrl = postmodel.MediaUrl,
+            CreateAt = postmodel.CreateAt,
+            LikesCount = postmodel.LikesCount,
+            Privacy = postmodel.Privacy,
+            Location = postmodel.Location,
+            // Comments = postmodel.Posts.Select(p => p.ToCommentDto().ToList()),
         };
     }
 
-    public static Post ToPostFromCreate(this CreatePostRequestDto postDto, int userId) 
+    public static Post ToPostFromCreateDto(this CreatePostRequestDto postDto) 
     {
         return new Post
         {
             Title = postDto.Title,
             Content = postDto.Content,
-            UserId = userId
+            MediaUrl = postDto.MediaUrl,
+            Privacy = postDto.Privacy,
+            Location = postDto.Location,
         };
     }
 
-    public static Post ToPostFromUpdate(this UpdatePostRequestDto postDto)
+    public static Post ToPostFromUpdateDto(this UpdatePostRequestDto postDto)
     {
         return new Post
         {
             Title = postDto.Title,
-            Content = postDto.Content
+            Content = postDto.Content,
+            MediaUrl = postDto.MediaUrl,
+            CreateAt = postDto.CreateAt,
+            LikesCount = postDto.LikesCount,
+            Privacy = postDto.Privacy,
+            Location = postDto.Location,
         };
     }
 }

@@ -2,7 +2,8 @@ using api.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using api.Mappers;
 using api.Dtos.Posts;
-using api.Dtos.User;
+using api.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers;
 
@@ -11,20 +12,18 @@ namespace api.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
-    private readonly IUserRepository _userRepository;
-    public PostController(IPostRepository postRepository, IUserRepository userRepository)
+    public PostController(IPostRepository postRepository)
     {
         _postRepository = postRepository;
-        _userRepository = userRepository;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] PostQueryObject query)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var posts = await _postRepository.GetAllAsync();
+        var posts = await _postRepository.GetAllAsync(query);
 
         var postDto = posts.Select(p => p.ToPostDto());
 
@@ -32,8 +31,9 @@ public class PostController : ControllerBase
     } 
 
     [HttpGet]
-    [Route("{id:int}")]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    [Route("{id:Guid}")]
+    [Authorize]
+    public async Task<IActionResult> GetById([FromRoute] string id)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -41,50 +41,40 @@ public class PostController : ControllerBase
         var post = await _postRepository.GetByIdAsync(id);
 
         if (post == null) 
-        {
-            return NotFound();
-        }
+            return NotFound("Post not found!");
 
         return Ok(post.ToPostDto());
     }
 
     [HttpPost]
-    [Route("{userId:int}")]
-    public async Task<IActionResult> Create([FromRoute] int userId, CreatePostRequestDto postDto)
+    public async Task<IActionResult> Create([FromBody] CreatePostRequestDto postDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        if (!await _userRepository.UserExists(userId)) 
-        {
-            return BadRequest("User does not exits!");
-        }
-
-        var postModel = postDto.ToPostFromCreate(userId);
+        var postModel = postDto.ToPostFromCreateDto();
         await _postRepository.CreateAsync(postModel);
         return CreatedAtAction(nameof(GetById), new { id = postModel.Id }, postModel.ToPostDto());
     }
-
+    
     [HttpPut]
-    [Route("{id:int}")]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdatePostRequestDto updateDto) 
+    [Route("{id:Guid}")]
+    public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdatePostRequestDto postDto) 
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var post = await _postRepository.UpdateAsync(id, updateDto.ToPostFromUpdate());
+        var post = await _postRepository.UpdateAsync(id, postDto.ToPostFromUpdateDto());
 
         if (post == null) 
-        {
             return NotFound("Post not found!");
-        }
 
         return Ok(post.ToPostDto());
     }
 
     [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    [Route("{id:Guid}")]
+    public async Task<IActionResult> Delete([FromRoute] string id)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -92,10 +82,8 @@ public class PostController : ControllerBase
         var postModel = await _postRepository.DeleteAsync(id);
 
         if (postModel == null)
-        {
-            return NotFound("Post does not exist!");
-        }
+            return NotFound("Post not found!");
 
-        return Ok(postModel);
+        return NoContent();
     }
 }

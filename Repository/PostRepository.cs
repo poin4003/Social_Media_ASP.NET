@@ -1,7 +1,8 @@
+using System.Net.Quic;
 using api.Data;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository;
@@ -22,23 +23,69 @@ public class PostRepository : IPostRepository
         return postModel;
     }
 
-    public async Task<Post?> DeleteAsync(int id)
+    public async Task<List<Post>> GetAllAsync(PostQueryObject query) 
     {
-        var postModel = await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+        var posts = _context.Posts.AsQueryable();
 
-        if (postModel == null)
+        if (!string.IsNullOrWhiteSpace(query.Title))
         {
-            return null;
+            posts = posts.Where(post => post.Title.Contains(query.Title));
         }
 
-        _context.Posts.Remove(postModel);
-        await _context.SaveChangesAsync();
-        return postModel;
-    }
+        if (!string.IsNullOrWhiteSpace(query.Content))
+        {
+            posts = posts.Where(post => post.Content.Contains(query.Content));
+        }
 
-    public async Task<List<Post>> GetAllAsync() 
-    {
-        return await _context.Posts.ToListAsync();
+        if (query.CreateAt.HasValue)
+        {
+            var createAt = query.CreateAt.Value.Date;
+            posts = posts.Where(post => post.CreateAt == createAt);
+        }
+
+        if (!string.IsNullOrEmpty(query.Privacy))
+        {
+            posts = posts.Where(post => post.Privacy == query.Privacy);
+        }
+
+        if (!string.IsNullOrEmpty(query.Location))
+        {
+            posts = posts.Where(post => post.Location.Contains(query.Location));
+        }
+
+        if (!string.IsNullOrEmpty(query.SortBy))
+        {
+            switch (query.SortBy.ToLower())
+            {
+                case "id":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.Id) : posts.OrderBy(post => post.Id);
+                    break;
+                case "title":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.Title) : posts.OrderBy(post => post.Title);
+                    break;
+                case "content":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.Content) : posts.OrderBy(post => post.Content);
+                    break;
+                case "createat":
+                    posts = query.IsDecsending ? posts.OrderByDescending(posts => posts.CreateAt) : posts.OrderBy(posts => posts.CreateAt);
+                    break;
+                case "privacy":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.Privacy) : posts.OrderBy(post => post.Privacy);
+                    break;
+                case "location":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.Location) : posts.OrderBy(post => post.Location);
+                    break;
+                case "likescount":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.LikesCount) : posts.OrderBy(post => post.LikesCount);
+                    break;
+                default: 
+                    break;
+            }
+        }
+
+        var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+        return await posts.Skip(skipNumber).Take(query.PageSize).ToListAsync();
     }
 
     public async Task<Post?> GetByIdAsync(int id)
@@ -46,23 +93,46 @@ public class PostRepository : IPostRepository
         var post = await _context.Posts.FindAsync(id);
         return post;
     }
-
-    public async Task<Post?> UpdateAsync(int id, Post postModel)
+    
+    public async Task<Post?> DeleteAsync(string id)
     {
-        var exitstingPost = await _context.Posts.FindAsync(id);
-        
-        if (exitstingPost == null) 
-        {
-            return null;
-        }
+        var postModel = await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
 
-        exitstingPost.Title = postModel.Title;
-        exitstingPost.Content = postModel.Content;
-        
+        if (postModel == null) 
+            return null;
+
+        _context.Posts.Remove(postModel);
         await _context.SaveChangesAsync();
-        
-        return exitstingPost;
+        return postModel;
     }
 
-    
+    public async Task<Post?> GetByIdAsync(string id)
+    {
+        return await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+    }
+
+    public async Task<Post?> UpdateAsync(string id, Post postModel)
+    {
+        var existingPost = await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+
+        if (existingPost == null)
+            return null;
+
+        existingPost.Title = postModel.Title;
+        existingPost.Content = postModel.Content;
+        existingPost.CreateAt = postModel.CreateAt;
+        existingPost.LikesCount = postModel.LikesCount;
+        existingPost.MediaUrl = postModel.MediaUrl;
+        existingPost.Privacy = postModel.Privacy;
+        existingPost.Location = postModel.Location;
+
+        await _context.SaveChangesAsync();
+
+        return existingPost;
+    }
+
+    public Task<bool> PostExists(string id)
+    {
+        return _context.Posts.AnyAsync(post => post.Id == id);
+    }
 }

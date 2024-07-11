@@ -5,19 +5,19 @@ namespace api.Mappers;
 
 public static class PostMapper
 {
-    public static PostDto ToPostDto(this Post postmodel) 
+    public static PostDto ToPostDto(this Post postModel) 
     {
         return new PostDto
         {
-            Id = postmodel.Id,
-            Title = postmodel.Title,
-            Content = postmodel.Content,
-            MediaUrl = postmodel.MediaUrl,
-            CreateAt = postmodel.CreateAt,
-            LikesCount = postmodel.LikesCount,
-            Privacy = postmodel.Privacy,
-            Location = postmodel.Location,
-            // Comments = postmodel.Posts.Select(p => p.ToCommentDto().ToList()),
+            Id = postModel.Id,
+            Title = postModel.Title,
+            Content = postModel.Content,
+            MediaUrl = postModel.MediaUrl,
+            CreateAt = postModel.CreateAt,
+            LikesCount = postModel.LikesCount,
+            Privacy = postModel.Privacy,
+            Location = postModel.Location,
+            Comments = postModel.Comments.Select(comment => comment.ToCommentDto()).ToList(),
         };
     }
 

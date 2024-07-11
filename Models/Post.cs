@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models;
 
+[Table("Posts")]
 public partial class Post
 {
     [Key]
@@ -21,5 +22,6 @@ public partial class Post
     [StringLength(50)]
     public string? Privacy { get; set; } = "public";
     public string? Location { get; set; }
-    public virtual ICollection<Post> Posts { get;} = new List<Post>();
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public virtual ICollection<ApplicationUserPost> ApplicationUserPosts  { get; set; } = new List<ApplicationUserPost>();
 }

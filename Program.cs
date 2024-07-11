@@ -1,5 +1,6 @@
 using api.Data;
 using api.Interfaces;
+using api.Middlewares;
 using api.Models;
 using api.Repository;
 using api.Service;
@@ -91,7 +92,9 @@ builder.Services.AddAuthentication(options => {
 
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IApplicationUserPostRepository, ApplicationUserPostRepository>();
 
 var app = builder.Build();
 
@@ -117,6 +120,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 

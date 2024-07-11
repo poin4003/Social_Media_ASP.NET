@@ -1,4 +1,3 @@
-using System.Net.Quic;
 using api.Data;
 using api.Helpers;
 using api.Interfaces;
@@ -108,7 +107,7 @@ public class PostRepository : IPostRepository
 
     public async Task<Post?> GetByIdAsync(string id)
     {
-        return await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+        return await _context.Posts.Include(post => post.Comments).FirstOrDefaultAsync(post => post.Id == id);
     }
 
     public async Task<Post?> UpdateAsync(string id, Post postModel)

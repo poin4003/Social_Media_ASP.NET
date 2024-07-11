@@ -6,13 +6,9 @@ namespace api.Models;
 
 public partial class ApplicationUser : IdentityUser
 {
-    // public ApplicationUser()
-    // {
-    //     Posts = new HashSet<Post>();
-    // } 
     [Column(TypeName = "datetime")]
     public DateTime BirthDay { get; set; } = DateTime.Today;
     [Required]
     public int AccessTime {get; set; } = 0;
-    // public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+    public virtual ICollection<ApplicationUserPost> ApplicationUserPosts { get; set; } = new List<ApplicationUserPost>();
 }

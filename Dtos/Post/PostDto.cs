@@ -1,5 +1,4 @@
-
-using api.Models;
+using api.Dtos.Comments;
 
 namespace api.Dtos.Posts;
 
@@ -13,5 +12,5 @@ public class PostDto
     public int LikesCount { get; set; }
     public string? Privacy { get; set; }
     public string? Location { get; set; }
-    public List<Comment>? Comments { get; set; }
+    public List<CommentDto>? Comments { get; set; }
 }

@@ -22,7 +22,7 @@ public class FriendController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetUserPost()
+    public async Task<IActionResult> GetUserFriends()
     {
         var email = User.GetEmail();
 
@@ -37,14 +37,41 @@ public class FriendController : ControllerBase
             return NotFound("User not found!");
         }
 
-        var friends = await _friendRepository.GetFriends(appUser);
+        var friends = await _friendRepository.GetUserFriends(appUser);
         return Ok(friends);
     }
 
-    // [HttpPost]
-    // [Authorize]
-    // public async Task<IActionResult> AddApplicationUserPost()
-    // {
+    [HttpPost]
+    [Route("{friendId}")]
+    [Authorize]
+    public async Task<IActionResult> AddFriend([FromRoute] string friendId)
+    {
+        var email = User.GetEmail();
+        var appUser = await _userManager.FindByEmailAsync(email);
+        var friend = await _userManager.FindByIdAsync(friendId);
 
-    // }
+        if (appUser == null) return BadRequest("User not found!");
+        if (friend == null) return BadRequest("Friend (user) not found!");
+
+        var userFriend = await _friendRepository.GetUserFriends(appUser);
+
+        if (userFriend.Any(e => e.Id == friendId)) return BadRequest("Cannot add same friend to friendTable");
+
+        var friendModel = new Friend 
+        {
+            ApplicationUserId = appUser.Id,
+            FriendId = friendId,
+        };
+
+        await _friendRepository.CreateAsync(friendModel);
+
+        if (friendModel == null)
+        {
+            return StatusCode(500, "Could not create");
+        }
+        else 
+        {
+            return Created();
+        }
+    }
 }

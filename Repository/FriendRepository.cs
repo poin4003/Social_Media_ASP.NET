@@ -14,12 +14,14 @@ public class FriendRepository : IFriendRepository
         _context = context;
     }
 
-    // public async Task<List<ApplicationUser>> CreateFriend(string ApplicationUserId, string FriendId)
-    // {
-        
-    // }
+    public async Task<Friend> CreateAsync(Friend friendModel)
+    {
+        await _context.Friends.AddAsync(friendModel);
+        await _context.SaveChangesAsync();
+        return friendModel;
+    }
 
-    public async Task<List<ApplicationUser>> GetFriends(ApplicationUser user)
+    public async Task<List<ApplicationUser>> GetUserFriends(ApplicationUser user)
     {
         return await _context.Friends.Where(friend => friend.ApplicationUserId == user.Id)
         .Select(friend => new ApplicationUser

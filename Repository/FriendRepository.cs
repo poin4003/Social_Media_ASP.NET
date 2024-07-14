@@ -14,9 +14,21 @@ public class FriendRepository : IFriendRepository
         _context = context;
     }
 
-    public async Task<Friend> CreateAsync(Friend friendModel)
+    public async Task<Friend> CreateFriendAsync(Friend friendModel)
     {
         await _context.Friends.AddAsync(friendModel);
+        await _context.SaveChangesAsync();
+        return friendModel;
+    }
+
+    public async Task<Friend> DeleteFriendAsync(ApplicationUser applicationUser, string friendId)
+    {
+        var friendModel = await _context.Friends.FirstOrDefaultAsync(x => x.ApplicationUserId == applicationUser.Id 
+        && x.FriendId == friendId);
+        if (friendModel == null)
+            return null;
+        
+        _context.Friends.Remove(friendModel);
         await _context.SaveChangesAsync();
         return friendModel;
     }

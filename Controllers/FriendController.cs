@@ -42,7 +42,7 @@ public class FriendController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{friendId}")]
+    [Route("{friendId:Guid}")]
     [Authorize]
     public async Task<IActionResult> AddFriend([FromRoute] string friendId)
     {
@@ -63,7 +63,7 @@ public class FriendController : ControllerBase
             FriendId = friendId,
         };
 
-        await _friendRepository.CreateAsync(friendModel);
+        await _friendRepository.CreateFriendAsync(friendModel);
 
         if (friendModel == null)
         {
@@ -73,5 +73,29 @@ public class FriendController : ControllerBase
         {
             return Created();
         }
+    }
+
+    [HttpDelete]
+    [Route("{friendId:Guid}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteFriend([FromRoute] string friendId)
+    {
+        var email = User.GetEmail();
+        var appUser = await _userManager.FindByEmailAsync(email);
+
+        var userFriend = await _friendRepository.GetUserFriends(appUser);
+
+        var filteredFriend = userFriend.Where(s => s.Id == friendId).ToList();
+
+        if (filteredFriend.Count() == 1)
+        {
+            await _friendRepository.DeleteFriendAsync(appUser, friendId);
+        }
+        else 
+        {
+            return BadRequest("Friend (user) is not in your friendList");
+        }
+
+        return NoContent();
     }
 }

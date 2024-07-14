@@ -77,6 +77,9 @@ public class PostRepository : IPostRepository
                 case "likescount":
                     posts = query.IsDecsending ? posts.OrderByDescending(post => post.LikesCount) : posts.OrderBy(post => post.LikesCount);
                     break;
+                case "applicationuserid":
+                    posts = query.IsDecsending ? posts.OrderByDescending(post => post.ApplicationUser) : posts.OrderBy(post => post.ApplicationUser);
+                    break;
                 default: 
                     break;
             }

@@ -12,5 +12,6 @@ public class PostDto
     public int LikesCount { get; set; }
     public string? Privacy { get; set; }
     public string? Location { get; set; }
+    public string? ApplicationUserId { get; set; }
     public List<CommentDto>? Comments { get; set; }
 }

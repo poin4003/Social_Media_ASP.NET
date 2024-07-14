@@ -9,17 +9,15 @@ namespace api.Controllers;
 
 [Route("api/[Controller]")]
 [ApiController]
-public class ApplicationUserPostController : ControllerBase
+public class FriendController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IPostRepository _postRepository;
-    private readonly IApplicationUserPostRepository _applicationUserPostRepository;
-    public ApplicationUserPostController(UserManager<ApplicationUser> userManager, 
-    IPostRepository postRepository, IApplicationUserPostRepository applicationUserPostRepository)
+    private readonly IFriendRepository _friendRepository;
+    public FriendController(UserManager<ApplicationUser> userManager, 
+    IFriendRepository friendRepository)
     {
         _userManager = userManager;
-        _postRepository = postRepository;
-        _applicationUserPostRepository = applicationUserPostRepository;
+        _friendRepository = friendRepository;
     }
 
     [HttpGet]
@@ -39,7 +37,14 @@ public class ApplicationUserPostController : ControllerBase
             return NotFound("User not found!");
         }
 
-        var applicationUserPost = await _applicationUserPostRepository.GetUserPosts(appUser);
-        return Ok(applicationUserPost);
+        var friends = await _friendRepository.GetFriends(appUser);
+        return Ok(friends);
     }
+
+    // [HttpPost]
+    // [Authorize]
+    // public async Task<IActionResult> AddApplicationUserPost()
+    // {
+
+    // }
 }

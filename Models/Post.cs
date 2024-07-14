@@ -22,6 +22,9 @@ public partial class Post
     [StringLength(50)]
     public string? Privacy { get; set; } = "public";
     public string? Location { get; set; }
+    [Required]
+    public string? ApplicationUserId { get; set; } = string.Empty;
+    [ForeignKey(nameof(ApplicationUserId))]
+    public virtual ApplicationUser? ApplicationUser { get; set; }
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
-    public virtual ICollection<ApplicationUserPost> ApplicationUserPosts  { get; set; } = new List<ApplicationUserPost>();
 }

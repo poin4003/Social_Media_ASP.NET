@@ -46,8 +46,9 @@ public class CommentController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{postId:Guid}")]
-    public async Task<IActionResult> Create([FromRoute] string postId, [FromBody] CreateCommentRequestDto commentDto)
+    [Route("{postId:Guid}/{userId:Guid}")]
+    public async Task<IActionResult> Create([FromRoute] string postId, [FromRoute] string userId,
+    [FromBody] CreateCommentRequestDto commentDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -55,7 +56,7 @@ public class CommentController : ControllerBase
         if (!await _postRepository.PostExists(postId))
             return BadRequest("User does not exist!");
 
-        var commentModel = commentDto.ToCommentFromCreate(postId);
+        var commentModel = commentDto.ToCommentFromCreate(postId, userId);
         await _commentReposity.CreateAsync(commentModel);
         return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.ToCommentDto());
     }

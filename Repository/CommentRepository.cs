@@ -1,6 +1,7 @@
 using api.Data;
 using api.Helpers;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,6 +71,9 @@ public class CommentRepository : ICommentRepository
                     break;
                 case "postid":
                     comments = query.IsDecsending ? comments.OrderByDescending(comment => comment.PostId) : comments.OrderBy(comment => comment.PostId);
+                    break;
+                case "applicationuserid":
+                    comments = query.IsDecsending ? comments.OrderByDescending(comment => comment.ApplicationUserId) : comments.OrderBy(comment => comment.ApplicationUserId);
                     break;
                 default:
                     break;

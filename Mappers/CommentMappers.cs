@@ -11,19 +11,19 @@ public static class CommentMapper
         {
             Id = commentModel.Id,
             PostId = commentModel.PostId,
-            // UserId = commentModel.UserId,
+            ApplicationUserId = commentModel.ApplicationUserId,
             Content = commentModel.Content,
             CreateAt = commentModel.CreateAt,
             LikesCount = commentModel.LikesCount,
         };
     }
 
-    public static Comment ToCommentFromCreate(this CreateCommentRequestDto commentDto, string postId) 
+    public static Comment ToCommentFromCreate(this CreateCommentRequestDto commentDto, string postId, string applicationUserId) 
     {
         return new Comment 
         {
             PostId = postId,
-            // UserId = userId,
+            ApplicationUserId = applicationUserId,
             Content = commentDto.Content
         };
     }

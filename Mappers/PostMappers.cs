@@ -17,11 +17,12 @@ public static class PostMapper
             LikesCount = postModel.LikesCount,
             Privacy = postModel.Privacy,
             Location = postModel.Location,
+            ApplicationUserId = postModel.ApplicationUserId,
             Comments = postModel.Comments.Select(comment => comment.ToCommentDto()).ToList(),
         };
     }
 
-    public static Post ToPostFromCreateDto(this CreatePostRequestDto postDto) 
+    public static Post ToPostFromCreateDto(this CreatePostRequestDto postDto, string applicationUserId) 
     {
         return new Post
         {
@@ -30,6 +31,7 @@ public static class PostMapper
             MediaUrl = postDto.MediaUrl,
             Privacy = postDto.Privacy,
             Location = postDto.Location,
+            ApplicationUserId = applicationUserId,
         };
     }
 

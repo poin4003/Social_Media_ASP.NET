@@ -14,24 +14,37 @@ public class ApplicationDBContext : IdentityDbContext<ApplicationUser>
     }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
-    public DbSet<ApplicationUserPost> ApplicationUserPosts { get; set; }
-
+    public DbSet<Friend> Friends { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<ApplicationUserPost>()
-            .HasKey(aup => new { aup.ApplicationUserId, aup.PostId });
+        builder.Entity<Friend>()
+            .HasKey(friend => new { friend.ApplicationUserId, friend.FriendId });
 
-        builder.Entity<ApplicationUserPost>()
-            .HasOne(aup => aup.ApplicationUser)
-            .WithMany(au => au.ApplicationUserPosts)
-            .HasForeignKey(aup => aup.ApplicationUserId);
+        builder.Entity<Friend>()
+            .HasOne(friend => friend.ApplicationUser)
+            .WithMany(au => au.Friends)
+            .HasForeignKey(friend => friend.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<ApplicationUserPost>()
-            .HasOne(aup => aup.Post)
-            .WithMany(p => p.ApplicationUserPosts)
-            .HasForeignKey(aup => aup.PostId);
+        builder.Entity<Friend>()
+            .HasOne(friend => friend.FriendUser)
+            .WithMany(au => au.FriendOf)
+            .HasForeignKey(friend => friend.FriendId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Comment>()
+            .HasOne(c => c.Post)
+            .WithMany(p => p.Comments)
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Comment>()
+            .HasOne(c => c.ApplicationUser)
+            .WithMany()
+            .HasForeignKey(c => c.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         List<IdentityRole> roles = new List<IdentityRole>
         {

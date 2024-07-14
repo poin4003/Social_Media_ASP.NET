@@ -47,12 +47,14 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreatePostRequestDto postDto)
+    [Route("{userId:Guid}")]
+    public async Task<IActionResult> Create([FromRoute] string userId,
+    [FromBody] CreatePostRequestDto postDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var postModel = postDto.ToPostFromCreateDto();
+        var postModel = postDto.ToPostFromCreateDto(userId);
         await _postRepository.CreateAsync(postModel);
         return CreatedAtAction(nameof(GetById), new { id = postModel.Id }, postModel.ToPostDto());
     }

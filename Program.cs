@@ -94,7 +94,7 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IApplicationUserPostRepository, ApplicationUserPostRepository>();
+builder.Services.AddScoped<IFriendRepository, FriendRepository>();
 
 var app = builder.Build();
 

@@ -1,7 +1,11 @@
 using api.Dtos.Comments;
+using api.Extenstions;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
+using api.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers;
@@ -12,10 +16,13 @@ public class CommentController : ControllerBase
 {
     private readonly ICommentRepository _commentReposity;
     private readonly IPostRepository _postRepository;
-    public CommentController(ICommentRepository commentRepository, IPostRepository postRepository) 
+    private readonly UserManager<ApplicationUser> _userManager;
+    public CommentController(ICommentRepository commentRepository, IPostRepository postRepository, 
+    UserManager<ApplicationUser> userManager) 
     {
         _commentReposity = commentRepository;
         _postRepository = postRepository;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -46,8 +53,9 @@ public class CommentController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{postId:Guid}/{userId:Guid}")]
-    public async Task<IActionResult> Create([FromRoute] string postId, [FromRoute] string userId,
+    [Route("{postId:Guid}")]
+    [Authorize]
+    public async Task<IActionResult> Create([FromRoute] string postId,
     [FromBody] CreateCommentRequestDto commentDto)
     {
         if (!ModelState.IsValid)
@@ -56,7 +64,11 @@ public class CommentController : ControllerBase
         if (!await _postRepository.PostExists(postId))
             return BadRequest("User does not exist!");
 
-        var commentModel = commentDto.ToCommentFromCreate(postId, userId);
+        var email = User.GetEmail();
+        var appUser = await _userManager.FindByEmailAsync(email);
+        
+
+        var commentModel = commentDto.ToCommentFromCreate(postId, appUser.Id);
         await _commentReposity.CreateAsync(commentModel);
         return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.ToCommentDto());
     }

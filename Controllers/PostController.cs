@@ -25,7 +25,7 @@ public class PostController : ControllerBase
 
         var posts = await _postRepository.GetAllAsync(query);
 
-        var postDto = posts.Select(p => p.ToPostDto());
+        var postDto = posts.Select(p => p.ToPostDto()).ToList();
 
         return Ok(postDto);
     } 

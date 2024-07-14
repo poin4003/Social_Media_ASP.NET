@@ -40,7 +40,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<List<Comment>> GetAllAsync(CommentQueryObject query)
     {
-        var comments = _context.Comments.AsQueryable();
+        var comments = _context.Comments.Include(a => a.ApplicationUser).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.Content))
         {
@@ -87,7 +87,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<Comment> GetByIdAsync(string id)
     {
-        return await _context.Comments.FirstOrDefaultAsync(comment => comment.Id == id);
+        return await _context.Comments.Include(a => a.ApplicationUser).FirstOrDefaultAsync(comment => comment.Id == id);
     }
 
     public async Task<Comment> UpdateAsync(string id, Comment commentModel)

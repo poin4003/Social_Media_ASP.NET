@@ -90,10 +90,9 @@ public class PostRepository : IPostRepository
         return await posts.Skip(skipNumber).Take(query.PageSize).ToListAsync();
     }
 
-    public async Task<Post?> GetByIdAsync(int id)
+    public async Task<Post?> GetByIdAsync(string id)
     {
-        var post = await _context.Posts.FindAsync(id);
-        return post;
+        return await _context.Posts.Include(a => a.Comments).ThenInclude(a => a.ApplicationUser).FirstOrDefaultAsync(post => post.Id == id);
     }
     
     public async Task<Post?> DeleteAsync(string id)
@@ -106,11 +105,6 @@ public class PostRepository : IPostRepository
         _context.Posts.Remove(postModel);
         await _context.SaveChangesAsync();
         return postModel;
-    }
-
-    public async Task<Post?> GetByIdAsync(string id)
-    {
-        return await _context.Posts.Include(post => post.Comments).FirstOrDefaultAsync(post => post.Id == id);
     }
 
     public async Task<Post?> UpdateAsync(string id, Post postModel)

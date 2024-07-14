@@ -11,10 +11,10 @@ public static class CommentMapper
         {
             Id = commentModel.Id,
             PostId = commentModel.PostId,
-            ApplicationUserId = commentModel.ApplicationUserId,
             Content = commentModel.Content,
             CreateAt = commentModel.CreateAt,
             LikesCount = commentModel.LikesCount,
+            CreatedBy = commentModel.ApplicationUser.UserName,
         };
     }
 

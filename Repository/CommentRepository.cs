@@ -92,7 +92,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<Comment> UpdateAsync(string id, Comment commentModel)
     {
-        var existingComment = await _context.Comments.Include(a => a.ApplicationUser).FirstOrDefaultAsync(comment => comment.Id == id);
+        var existingComment = await _context.Comments.Include(x => x.ApplicationUser).FirstOrDefaultAsync(comment => comment.Id == id);
 
         if (existingComment == null)
             return null;

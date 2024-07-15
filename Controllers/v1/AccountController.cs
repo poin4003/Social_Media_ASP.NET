@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Controllers;
+namespace api.Controllers.v1;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class AccountController : ControllerBase
 {
@@ -42,7 +42,7 @@ public class AccountController : ControllerBase
             {
                 UserName = user.UserName,
                 Email = user.Email,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             }
         );
     }
@@ -74,7 +74,7 @@ public class AccountController : ControllerBase
                         {
                             UserName = appUser.UserName,
                             Email = appUser.Email,
-                            Token = _tokenService.CreateToken(appUser)
+                            Token = await _tokenService.CreateToken(appUser)
                         }
                     );
                 }

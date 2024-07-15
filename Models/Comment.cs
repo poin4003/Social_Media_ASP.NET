@@ -19,9 +19,9 @@ public class Comment
     [Required]
     public int LikesCount { get; set; } = 0;
     [ForeignKey(nameof(PostId))]
-    public virtual Post? Post{ get; set; }
+    public virtual Post Post{ get; set; } = null!;
     [ForeignKey(nameof(ApplicationUserId))]
-    public virtual ApplicationUser? ApplicationUser { get; set;}
+    public virtual ApplicationUser ApplicationUser { get; set;} = null!;
 }
 
 

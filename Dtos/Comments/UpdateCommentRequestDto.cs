@@ -9,5 +9,5 @@ public class UpdateCommentRequestDto
     public string Content { get; set; } = string.Empty;
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "LikeCount must be a non-negative number!")]
-    public int LikesCount { get; set; }
+    public int LikesCount { get; set; } = 0;
 }

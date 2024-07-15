@@ -16,20 +16,20 @@ public class UpdatePostRequestDto
     public string Content {get; set; } = string.Empty;
 
     [Required]
-    public DateTime CreateAt { get; set; } 
+    public DateTime CreateAt { get; set; } = DateTime.Today;
 
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "LikeCount must be a non-negative number!")]
-    public int LikesCount { get; set; }
+    public int LikesCount { get; set; } = 0;
 
     [Url(ErrorMessage = "MediaUrl must be a valid URL")]
     [StringLength(2048, ErrorMessage = "MediaUrl must be less than 2048 characters!")]
-    public string? MediaUrl { get; set; }
+    public string MediaUrl { get; set; } = string.Empty;
 
     [Required]
     [EnumDataType(typeof(PrivacyOptions), ErrorMessage = "Privacy must be Public, Private or FriendOnly")]
-    public string? Privacy { get; set; }
+    public string Privacy { get; set; } = "Public";
 
     [StringLength(100, ErrorMessage = "Location must be less than 100 character!")]    
-    public string? Location { get; set; }
+    public string Location { get; set; } = string.Empty;
 }

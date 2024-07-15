@@ -23,12 +23,12 @@ public class CreatePostRequestDto
 
     [Url(ErrorMessage = "MediaUrl must be a valid URL")]
     [StringLength(2048, ErrorMessage = "MediaUrl must be less than 2048 characters!")]
-    public string? MediaUrl { get; set; }
+    public string MediaUrl { get; set; } = string.Empty;
 
     [Required]
     [EnumDataType(typeof(PrivacyOptions), ErrorMessage = "Privacy must be Public, Private or FriendOnly")]
-    public string? Privacy { get; set; }
+    public string Privacy { get; set; } = "Public";
 
     [StringLength(100, ErrorMessage = "Location must be less than 100 character!")]    
-    public string? Location { get; set; }
+    public string Location { get; set; } = string.Empty;
 }

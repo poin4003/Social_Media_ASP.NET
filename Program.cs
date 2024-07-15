@@ -111,6 +111,13 @@ else
     app.UseHsts();
 }
 
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+    .SetIsOriginAllowed(origin => true)
+);
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

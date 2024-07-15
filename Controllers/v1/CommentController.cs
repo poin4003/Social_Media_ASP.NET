@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers;
+namespace api.Controllers.v1;
 
-[Route("api/[Controller]")]
+[Route("api/v1/[Controller]")]
 [ApiController]
 public class CommentController : ControllerBase
 {
@@ -64,10 +64,11 @@ public class CommentController : ControllerBase
         if (!await _postRepository.PostExists(postId))
             return BadRequest("User does not exist!");
 
-        var email = User.GetEmail();
-        var appUser = await _userManager.FindByEmailAsync(email);
-        
+        var applicationUserId = User.GetId();
+        var appUser = await _userManager.FindByIdAsync(applicationUserId);
 
+        if (appUser == null) return BadRequest("User not found!");
+        
         var commentModel = commentDto.ToCommentFromCreate(postId, appUser.Id);
         await _commentReposity.CreateAsync(commentModel);
         return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.ToCommentDto());

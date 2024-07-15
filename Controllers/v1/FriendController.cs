@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers;
+namespace api.Controllers.v1;
 
-[Route("api/[Controller]")]
+[Route("api/v1/[Controller]")]
 [ApiController]
 public class FriendController : ControllerBase
 {
@@ -24,19 +24,15 @@ public class FriendController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetUserFriends()
     {
-        var email = User.GetEmail();
+        var applicationUserId = User.GetId();
 
-        if (string.IsNullOrEmpty(email))
-        {
-            return BadRequest("Email claims is missing!");
-        }
+        if (string.IsNullOrEmpty(applicationUserId))
+            return BadRequest("NameIdentitifer claims is missing!");
 
-        var appUser = await _userManager.FindByEmailAsync(email);
-        if (appUser == null)
-        {
-            return NotFound("User not found!");
-        }
+        var appUser = await _userManager.FindByIdAsync(applicationUserId);
 
+        if (appUser == null) return BadRequest("User not found!");
+      
         var friends = await _friendRepository.GetUserFriends(appUser);
         return Ok(friends);
     }
@@ -46,8 +42,8 @@ public class FriendController : ControllerBase
     [Authorize]
     public async Task<IActionResult> AddFriend([FromRoute] string friendId)
     {
-        var email = User.GetEmail();
-        var appUser = await _userManager.FindByEmailAsync(email);
+        var applicationUserId = User.GetId();
+        var appUser = await _userManager.FindByIdAsync(applicationUserId);
         var friend = await _userManager.FindByIdAsync(friendId);
 
         if (appUser == null) return BadRequest("User not found!");
@@ -80,8 +76,10 @@ public class FriendController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteFriend([FromRoute] string friendId)
     {
-        var email = User.GetEmail();
-        var appUser = await _userManager.FindByEmailAsync(email);
+        var applicationUserId = User.GetId();
+        var appUser = await _userManager.FindByIdAsync(applicationUserId);
+
+        if (appUser == null) return BadRequest("User not found!");
 
         var userFriend = await _friendRepository.GetUserFriends(appUser);
 

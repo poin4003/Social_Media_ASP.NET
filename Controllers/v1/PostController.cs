@@ -4,17 +4,22 @@ using api.Mappers;
 using api.Dtos.Posts;
 using api.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using api.Models;
+using Microsoft.AspNetCore.Identity;
+using api.Extenstions;
 
-namespace api.Controllers;
+namespace api.Controllers.v1;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
-    public PostController(IPostRepository postRepository)
+    private readonly UserManager<ApplicationUser> _userManger;
+    public PostController(IPostRepository postRepository, UserManager<ApplicationUser> userManger)
     {
         _postRepository = postRepository;
+        _userManger = userManger;
     }
 
     [HttpGet]
@@ -32,7 +37,6 @@ public class PostController : ControllerBase
 
     [HttpGet]
     [Route("{id:Guid}")]
-    [Authorize]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         if (!ModelState.IsValid)
@@ -47,12 +51,13 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{userId:Guid}")]
-    public async Task<IActionResult> Create([FromRoute] string userId,
-    [FromBody] CreatePostRequestDto postDto)
+    [Authorize]
+    public async Task<IActionResult> Create([FromBody] CreatePostRequestDto postDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
+
+        var userId = User.GetId();
 
         var postModel = postDto.ToPostFromCreateDto(userId);
         await _postRepository.CreateAsync(postModel);

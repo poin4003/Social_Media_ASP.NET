@@ -58,7 +58,6 @@ public class PostController : ControllerBase
         {
             var notFoundResponse = new ApiResponseObject<PostDto>
             {
-                Record = null,
                 Message = "Failed: Post not found!"
             };
             return NotFound(notFoundResponse);

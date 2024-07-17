@@ -60,7 +60,6 @@ public class CommentController : ControllerBase
         {
             var notFoundResponse = new ApiResponseObject<CommentDto>
             {
-                Record = null,
                 Message = "Failed: Comment not found!"
             };
             return NotFound(notFoundResponse);

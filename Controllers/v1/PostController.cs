@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using api.Extenstions;
+using api.Helpers.ApiResponseObject;
 
 namespace api.Controllers.v1;
 
@@ -30,9 +31,24 @@ public class PostController : ControllerBase
 
         var posts = await _postRepository.GetAllAsync(query);
 
-        var postDto = posts.Select(p => p.ToPostDto()).ToList();
+        var totalCount = posts.Count;
+        var skipNumber = (query.PageNumber - 1) * query.PageSize;
+        var postDtos = posts.Select(post => post.ToPostDto()).ToList();
 
-        return Ok(postDto);
+        var response = new ApiResponseObjectWithPaging<PostDto>
+        {
+            Record = postDtos,
+            Meta = new PaginationMeta
+            {
+                TotalCount = totalCount,
+                PageSize = query.PageSize,
+                PageNumber = query.PageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+            },
+            Message = "Success: Get post list!"
+        };
+
+        return Ok(response);
     } 
 
     [HttpGet]
@@ -45,9 +61,22 @@ public class PostController : ControllerBase
         var post = await _postRepository.GetByIdAsync(id);
 
         if (post == null) 
-            return NotFound("Post not found!");
+        {
+            var notFoundResponse = new ApiResponseObject<PostDto>
+            {
+                Record = null,
+                Message = "Failed: Post not found!"
+            };
+            return NotFound(notFoundResponse);
+        }    
 
-        return Ok(post.ToPostDto());
+        var response = new ApiResponseObject<PostDto>
+        {
+            Record = post.ToPostDto(),
+            Message = "Success: Get comment list!"
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]

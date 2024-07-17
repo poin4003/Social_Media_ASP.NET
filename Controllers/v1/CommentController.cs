@@ -4,9 +4,11 @@ using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using api.Helpers.ApiResponseObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using api.Utils.ApiResponseMethod;
 
 namespace api.Controllers.v1;
 
@@ -29,27 +31,61 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] CommentQueryObject query) 
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
-        var comment = await _commentReposity.GetAllAsync(query);
+        var comments = await _commentReposity.GetAllAsync(query);
 
-        var commentDto = comment.Select(comment => comment.ToCommentDto());
+        var totalCount = comments.Count;
+        var skipNumber = (query.PageNumber - 1) * query.PageSize;
+        var commentDtos = comments.Select(comment => comment.ToCommentDto()).ToList();
 
-        return Ok(commentDto);
+        var response = new ApiResponseObjectWithPaging<CommentDto>
+        {
+            Record = commentDtos,
+            Meta = new PaginationMeta
+            {
+                TotalCount = totalCount,
+                PageSize = query.PageSize,
+                PageNumber = query.PageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+            },
+            Message = "Success: Get comment list!"
+        };
+
+        return Ok(response);
     }
 
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
         
         var comment = await _commentReposity.GetByIdAsync(id);
+        
+        if (comment == null) 
+        {
+            var notFoundResponse = new ApiResponseObject<CommentDto>
+            {
+                Record = null,
+                Message = "Failed: Comment not found!"
+            };
+            return NotFound(notFoundResponse);
+        }    
 
-        if (comment == null)
-            return NotFound();
+        var response = new ApiResponseObject<CommentDto>
+        {
+            Record = comment.ToCommentDto(),
+            Message = "Success: Get comment!"
+        };
 
-        return Ok(comment.ToCommentDto());
+        return Ok(response);
     }
 
     [HttpPost]
@@ -59,19 +95,44 @@ public class CommentController : ControllerBase
     [FromBody] CreateCommentRequestDto commentDto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
-        if (!await _postRepository.PostExists(postId))
-            return BadRequest("User does not exist!");
+        var existingPost = await _postRepository.PostExists(postId);
+
+        if (!existingPost) 
+        {
+            var BadRequestResponse = new ApiResponseObject<CommentDto>
+            {
+                Message = "Failed: Post does not exist!"
+            };
+            return BadRequest(BadRequestResponse);
+        }    
 
         var applicationUserId = User.GetId();
-        var appUser = await _userManager.FindByIdAsync(applicationUserId);
+        var existingAppUser = await _userManager.FindByIdAsync(applicationUserId);
 
-        if (appUser == null) return BadRequest("User not found!");
+        if (existingAppUser == null) 
+        {
+            var BadRequestResponse = new ApiResponseObject<CommentDto>
+            {
+                Message = "Failed: User does not exist!"
+            };
+            return BadRequest(BadRequestResponse);
+        }
         
-        var commentModel = commentDto.ToCommentFromCreate(postId, appUser.Id);
+        var commentModel = commentDto.ToCommentFromCreate(postId, existingAppUser.Id);
         await _commentReposity.CreateAsync(commentModel);
-        return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.ToCommentDto());
+        
+        var response = new ApiResponseObject<CommentDto>
+        {
+            Record = commentModel.ToCommentDto(),
+            Message = "Success: Comment created!" 
+        };
+
+        return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, response);
     }
 
     [HttpPut]
@@ -79,14 +140,29 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdateCommentRequestDto commentDto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
         var commentModel = await _commentReposity.UpdateAsync(id, commentDto.ToCommentFromUpdate());
 
         if (commentModel == null)
-            return NotFound();
+        {
+            var badRequestResponse = new ApiResponseObject<CommentDto>
+            {
+                Message = "Failed: Comment does not exist!"
+            };
+            return BadRequest(badRequestResponse);
+        }
 
-        return Ok(commentModel.ToCommentDto());
+        var response = new ApiResponseObject<CommentDto>
+        {
+            Record = commentModel.ToCommentDto(),
+            Message = "Success: Updated comment!"
+        };
+
+        return Ok(response);
     }
 
     [HttpDelete]
@@ -94,13 +170,27 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
         
         var commentModel = await _commentReposity.DeleteAsync(id);
 
         if (commentModel == null)
-            return NotFound();
+        {
+            var BadRequestResponse = new ApiResponseObject<CommentDto>
+            {
+                Message = "Failed: Comment not found!"
+            };
+            return BadRequest(BadRequestResponse);
+        }
 
-        return NoContent();
+        var response = new ApiResponseObject<CommentDto>
+        {
+            Message = "Success: Deleted comment!"
+        };
+
+        return Ok(response);
     }
 }

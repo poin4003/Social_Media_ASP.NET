@@ -1,5 +1,5 @@
 using api.Extenstions;
-using api.Helpers;
+using api.Helpers.ApiResponseObject;
 using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -28,14 +28,29 @@ public class FriendController : ControllerBase
         var applicationUserId = User.GetId();
 
         if (string.IsNullOrEmpty(applicationUserId))
-            return BadRequest("NameIdentitifer claims is missing!");
+            return BadRequest("Failed: NameIdentitifer claims is missing!");
 
         var appUser = await _userManager.FindByIdAsync(applicationUserId);
 
-        if (appUser == null) return BadRequest("User not found!");
-      
+        if (appUser == null) 
+        {
+            var notFoundResponse = new ApiResponseObjectWithPaging<ApplicationUser> 
+            {
+                Record = [],
+                Message = "Failed: User not found!"
+            };
+            return BadRequest(notFoundResponse);
+        } 
+
         var friends = await _friendRepository.GetUserFriends(appUser);
-        return Ok(friends);
+
+        var response = new ApiResponseObjectWithPaging<ApplicationUser>
+        {
+            Record = friends,
+            Message = "Success: Get friend list!"
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]
@@ -47,8 +62,22 @@ public class FriendController : ControllerBase
         var appUser = await _userManager.FindByIdAsync(applicationUserId);
         var friend = await _userManager.FindByIdAsync(friendId);
 
-        if (appUser == null) return BadRequest("User not found!");
-        if (friend == null) return BadRequest("Friend (user) not found!");
+        if (appUser == null) 
+        {
+            var badRequestResponse = new ApiResponseObject<ApplicationUser>
+            {
+                Message = "Failed: User does not exist!"
+            };
+            return BadRequest(badRequestResponse);
+        }
+        if (friend == null) 
+        {
+            var badRequestResponse = new ApiResponseObject<ApplicationUser>
+            {
+                Message = "Failed: Friend (user) does not exist!"
+            };
+            return BadRequest(badRequestResponse);
+        }
 
         var userFriend = await _friendRepository.GetUserFriends(appUser);
 
@@ -68,7 +97,11 @@ public class FriendController : ControllerBase
         }
         else 
         {
-            return Created();
+            var response = new ApiResponseObject<Friend>
+            {
+                Message = "Success: Friend created!"
+            };
+            return Ok(response);
         }
     }
 
@@ -80,7 +113,14 @@ public class FriendController : ControllerBase
         var applicationUserId = User.GetId();
         var appUser = await _userManager.FindByIdAsync(applicationUserId);
 
-        if (appUser == null) return BadRequest("User not found!");
+        if (appUser == null) 
+        {
+            var badRequestResponse = new ApiResponseObject<ApplicationUser>
+            {
+                Message = "Failed: User does not exist!"
+            };
+            return BadRequest(badRequestResponse);
+        }
 
         var userFriend = await _friendRepository.GetUserFriends(appUser);
 
@@ -92,9 +132,18 @@ public class FriendController : ControllerBase
         }
         else 
         {
-            return BadRequest("Friend (user) is not in your friendList");
+            var badRequestResponse = new ApiResponseObject<Friend>
+            {
+                Message = "Failed: Friend (user) is not in your friendList"
+            };
+            return BadRequest(badRequestResponse);
         }
 
-        return NoContent();
+        var response = new ApiResponseObject<Friend>
+        {
+            Message = "Success: Friend deleted!"
+        };
+
+        return Ok(response);
     }
 }

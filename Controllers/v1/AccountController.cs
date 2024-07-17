@@ -1,4 +1,5 @@
 using api.Dtos.Account;
+using api.Helpers.ApiResponseObject;
 using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
@@ -27,21 +28,36 @@ public class AccountController : ControllerBase
         var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
 
         if (user == null)
-            return Unauthorized("Idvalid Email!");
-
+        {
+            var unauthorizedReponse = new ApiResponseObject<ApplicationUser>
+            {
+                Message = "Failed: Invalid Email!"
+            };
+            return Unauthorized(unauthorizedReponse);
+        }
         var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
         if (!result.Succeeded)
-            return Unauthorized("Email not found or password incorrect");
-        
-        return Ok(
-            new NewUserDto
+        {
+            var unauthorizedReponse = new ApiResponseObject<ApplicationUser>
+            {
+                Message = "Failed: Email does not exits or password incorrect!"
+            };
+            return Unauthorized(unauthorizedReponse);
+        } 
+
+        var response = new ApiResponseObject<NewUserDto>
+        {
+            Record = new NewUserDto
             {
                 UserName = user.UserName,
                 Email = user.Email,
                 Token = await _tokenService.CreateToken(user)
-            }
-        );
+            },
+            Message = "Success: Login!"
+        };
+
+        return Ok(response);
     }
 
     [HttpPost("register")]
@@ -63,14 +79,17 @@ public class AccountController : ControllerBase
                 var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
                 if (roleResult.Succeeded)
                 {
-                    return Ok(
-                        new NewUserDto
+                    var response = new ApiResponseObject<NewUserDto>
+                    {
+                        Record = new NewUserDto
                         {
                             UserName = appUser.UserName,
                             Email = appUser.Email,
                             Token = await _tokenService.CreateToken(appUser)
-                        }
-                    );
+                        },
+                        Message = "Success: Account created!"
+                    };
+                    return Ok(response);
                 }
                 else 
                 {

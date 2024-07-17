@@ -8,6 +8,7 @@ using api.Models;
 using Microsoft.AspNetCore.Identity;
 using api.Extenstions;
 using api.Helpers.ApiResponseObject;
+using api.Utils.ApiResponseMethod;
 
 namespace api.Controllers.v1;
 
@@ -27,7 +28,10 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] PostQueryObject query)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
         var posts = await _postRepository.GetAllAsync(query);
 
@@ -56,7 +60,10 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
         var post = await _postRepository.GetByIdAsync(id);
 
@@ -73,7 +80,7 @@ public class PostController : ControllerBase
         var response = new ApiResponseObject<PostDto>
         {
             Record = post.ToPostDto(),
-            Message = "Success: Get comment list!"
+            Message = "Success: Get post!"
         };
 
         return Ok(response);
@@ -84,13 +91,23 @@ public class PostController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreatePostRequestDto postDto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
         var userId = User.GetId();
 
         var postModel = postDto.ToPostFromCreateDto(userId);
         await _postRepository.CreateAsync(postModel);
-        return CreatedAtAction(nameof(GetById), new { id = postModel.Id }, postModel.ToPostDto());
+
+        var response = new ApiResponseObject<PostDto>
+        {
+            Record = postModel.ToPostDto(),
+            Message = "Success: Post created!"
+        };
+
+        return CreatedAtAction(nameof(GetById), new { id = postModel.Id }, response);
     }
     
     [HttpPut]
@@ -98,14 +115,29 @@ public class PostController : ControllerBase
     public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdatePostRequestDto postDto) 
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
-        var post = await _postRepository.UpdateAsync(id, postDto.ToPostFromUpdateDto());
+        var postModel = await _postRepository.UpdateAsync(id, postDto.ToPostFromUpdateDto());
 
-        if (post == null) 
-            return NotFound("Post not found!");
+        if (postModel == null) 
+        {
+            var badRequestResponse = new ApiResponseObject<PostDto>
+            {
+                Message = "Failed: Post does not exist!"
+            };
+            return BadRequest(badRequestResponse);
+        }
 
-        return Ok(post.ToPostDto());
+        var response = new ApiResponseObject<PostDto>
+        {
+            Record = postModel.ToPostDto(),
+            Message = "Success: Post updated!"
+        };
+
+        return Ok(response);
     }
 
     [HttpDelete]
@@ -113,13 +145,27 @@ public class PostController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        {
+            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
+            return BadRequest(badRequestResponse);
+        }
 
         var postModel = await _postRepository.DeleteAsync(id);
 
         if (postModel == null)
-            return NotFound("Post not found!");
+        {
+            var badRequestResponse = new ApiResponseObject<PostDto>
+            {
+                Message = "Failed: Post does not exist!"
+            };
+            return BadRequest(badRequestResponse);
+        }
 
-        return NoContent();
+        var response = new ApiResponseObject<PostDto>
+        {
+            Message = "Success: Post deleted!"
+        };
+
+        return Ok(response);
     }
 }

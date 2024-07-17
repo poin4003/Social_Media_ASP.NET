@@ -159,7 +159,7 @@ public class CommentController : ControllerBase
         var response = new ApiResponseObject<CommentDto>
         {
             Record = commentModel.ToCommentDto(),
-            Message = "Success: Updated comment!"
+            Message = "Success: Comment updated!"
         };
 
         return Ok(response);
@@ -179,16 +179,16 @@ public class CommentController : ControllerBase
 
         if (commentModel == null)
         {
-            var BadRequestResponse = new ApiResponseObject<CommentDto>
+            var badRequestResponse = new ApiResponseObject<CommentDto>
             {
-                Message = "Failed: Comment not found!"
+                Message = "Failed: Comment does not exist!"
             };
-            return BadRequest(BadRequestResponse);
+            return BadRequest(badRequestResponse);
         }
 
         var response = new ApiResponseObject<CommentDto>
         {
-            Message = "Success: Deleted comment!"
+            Message = "Success: Comment deleted!"
         };
 
         return Ok(response);

@@ -8,7 +8,6 @@ using api.Models;
 using Microsoft.AspNetCore.Identity;
 using api.Extenstions;
 using api.Helpers.ApiResponseObject;
-using api.Utils.ApiResponseMethod;
 
 namespace api.Controllers.v1;
 
@@ -27,12 +26,6 @@ public class PostController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] PostQueryObject query)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var posts = await _postRepository.GetAllAsync(query);
 
         var totalCount = posts.Count;
@@ -59,12 +52,6 @@ public class PostController : ControllerBase
     [Route("{id:Guid}")]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var post = await _postRepository.GetByIdAsync(id);
 
         if (post == null) 
@@ -90,12 +77,6 @@ public class PostController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Create([FromBody] CreatePostRequestDto postDto)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var userId = User.GetId();
 
         var postModel = postDto.ToPostFromCreateDto(userId);
@@ -114,12 +95,6 @@ public class PostController : ControllerBase
     [Route("{id:Guid}")]
     public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdatePostRequestDto postDto) 
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var postModel = await _postRepository.UpdateAsync(id, postDto.ToPostFromUpdateDto());
 
         if (postModel == null) 
@@ -144,12 +119,6 @@ public class PostController : ControllerBase
     [Route("{id:Guid}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<PostDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var postModel = await _postRepository.DeleteAsync(id);
 
         if (postModel == null)

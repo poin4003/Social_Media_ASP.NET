@@ -23,10 +23,7 @@ public class AccountController : ControllerBase
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-        
+    {        
         var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
 
         if (user == null)
@@ -52,9 +49,6 @@ public class AccountController : ControllerBase
     {
         try 
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var appUser = new ApplicationUser 
             {
                 UserName = registerDto.Username,

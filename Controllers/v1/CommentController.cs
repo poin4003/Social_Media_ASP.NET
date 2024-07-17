@@ -8,7 +8,6 @@ using api.Helpers.ApiResponseObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using api.Utils.ApiResponseMethod;
 
 namespace api.Controllers.v1;
 
@@ -30,12 +29,6 @@ public class CommentController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] CommentQueryObject query) 
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var comments = await _commentReposity.GetAllAsync(query);
 
         var totalCount = comments.Count;
@@ -60,13 +53,7 @@ public class CommentController : ControllerBase
 
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> GetById([FromRoute] string id)
-    {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-        
+    {     
         var comment = await _commentReposity.GetByIdAsync(id);
         
         if (comment == null) 
@@ -94,12 +81,6 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> Create([FromRoute] string postId,
     [FromBody] CreateCommentRequestDto commentDto)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var existingPost = await _postRepository.PostExists(postId);
 
         if (!existingPost) 
@@ -139,12 +120,6 @@ public class CommentController : ControllerBase
     [Route("{id:Guid}")]
     public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdateCommentRequestDto commentDto)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-
         var commentModel = await _commentReposity.UpdateAsync(id, commentDto.ToCommentFromUpdate());
 
         if (commentModel == null)
@@ -169,12 +144,6 @@ public class CommentController : ControllerBase
     [Route("{id:Guid}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
-        if (!ModelState.IsValid)
-        {
-            var badRequestResponse = ApiResponseMethod.ToApiResponseObject<CommentDto>(ModelState);
-            return BadRequest(badRequestResponse);
-        }
-        
         var commentModel = await _commentReposity.DeleteAsync(id);
 
         if (commentModel == null)

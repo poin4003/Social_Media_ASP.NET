@@ -427,3 +427,9 @@ C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\Microso
 C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
 C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
 C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\GraphQL.dll
+C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\GraphQLParser.dll
+C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\GraphQL.AspNet.dll
+C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\GraphQL.SystemTextJson.dll
+C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\System.Text.Json.dll
+C:\workspace\C#\api\SocialMediaApi\Social_Media_ASP.NET\bin\Debug\net8.0\GraphQL.Server.Ui.Playground.dll

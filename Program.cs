@@ -4,6 +4,8 @@ using api.Middlewares;
 using api.Models;
 using api.Repository;
 using api.Service;
+using GraphQL;
+using GraphQL.AspNet.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -90,11 +92,12 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IFriendRepository, FriendRepository>();
+
+builder.Services.AddGraphQL();
 
 var app = builder.Build();
 
@@ -104,6 +107,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseGraphQLPlayground();
 }
 else
 {
@@ -129,6 +133,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
+
+app.UseGraphQL();
 
 app.MapControllers();
 

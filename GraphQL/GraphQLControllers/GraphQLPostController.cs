@@ -25,6 +25,11 @@ public class GraphQLPostController : GraphController
     public async Task<IGraphActionResult> RetrivePost(string id)
     {
         var post = await _postRepository.GetByIdAsync(id);
+        if (post == null) 
+        {
+            return BadRequest("Failed: Post does not exist!");
+        }
+
         return Ok(post.ToPostDto());
     }
 
